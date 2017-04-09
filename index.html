@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
+    <script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <input type="text" id="message">
+    <button type="submit" id="submit">Submit</button>
+    <script>
+      var firebase = new Firebase('https://jemscazlab.firebaseio.com/');
+      
+      firebase.on("value", function(snapshot) {
+        var x = snapshot.val();
+        logAnim(x);
+      });
+      
+      function logAnim(x) {
+        console.log(x.animationState);
+      };
+      
+      //console.log(x.val());
+      
+      function saveMsg(message) {
+        firebase.push({fieldName: 'message', text: message});
+        firebase.update({animationState: "aaa"});
+      }
+      
+      $("#submit").click(function(e){
+        e.preventDefault();
+        
+        var msg = $("#message").val();
+        //console.log(msg);
+        saveMsg(msg);
+        
+        $("#message").val("");
+      });
+  
+    </script>
+  </body>
+</html>

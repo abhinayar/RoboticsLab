@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
+    <script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div id="messages">
+      <!-- Populate from FB -->
+    </div>
+    <script>
+      var firebase = new Firebase('https://jemscazlab.firebaseio.com/');
+      firebase.limitToLast(10).on('child_added', function (snapshot) {
+        var data = snapshot.val();
+        var message = data.text;
+
+        if (message != undefined)
+        {
+          var html = "<br/> " + message + " ";
+          $("#messages").append(html);
+        }
+      });
+    </script>
+  </body>
+</html>

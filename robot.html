@@ -1,0 +1,244 @@
+<html>
+  <head>
+    <script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
+    <script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+    <link href="robotStyles.css" rel="stylesheet">
+  </head>
+  <body>
+  <div class="app-container">
+        <div class="eye-wrapper">
+            <div class="eye left blink">
+                <!-- LEFT EYE -->
+            </div>
+        </div>
+        <div class="eye-wrapper">
+            <div class="eye right blink">
+                <!-- RIGHT EYE -->
+            </div>
+        </div>
+        <div class="mouth-wrapper">
+            <div class="mouth">
+                <!-- MOUTH -->
+            </div>
+        </div>
+    </div>
+    <script>
+      //Get Firebase vars
+      var FanimationState = new Firebase('https://jemscazlab.firebaseio.com/animationState');
+      var FemotiveFace = new Firebase('https://jemscazlab.firebaseio.com/emotiveFace');
+      var FemotiveVoice = new Firebase('https://jemscazlab.firebaseio.com/emotiveVoice');
+      var FendSpeech = new Firebase('https://jemscazlab.firebaseio.com/endSpeech');
+      var FlastQuestion = new Firebase('https://jemscazlab.firebaseio.com/lastQuestion');
+      var Freset = new Firebase('https://jemscazlab.firebaseio.com/reset');
+      var Fspeech = new Firebase('https://jemscazlab.firebaseio.com/speech');
+      var firebaseFull = new Firebase('https://jemscazlab.firebaseio.com/');
+      var curState;
+      var blinkInterval;
+      
+      //Global vars
+    
+      
+      function main(animationState, emotiveFace, emotiveVoice, endSpeech, lastQuestion, reset, speech) {
+        curState = {
+          "animationState" : animationState,
+          "emotiveFace": emotiveFace,
+          "emotiveVoice" : emotiveVoice,
+          "endSpeech" : endSpeech,
+          "lastQuestion" : lastQuestion, 
+          "reset" : reset,
+          "speech" : speech
+        }
+        
+        console.log(curState.emotiveVoice);
+        //setGlobalVars(curState);        
+      }  
+      
+      //check for value changes
+      
+      firebaseFull.on("value", function(snapshot) {
+        var x = snapshot.val();
+        var animationState = x.animationState;
+        var emotiveFace = x.emotiveFace;
+        var emotiveVoice = x.emotiveVoice;
+        var endSpeech = x.endSpeech;
+        var lastQuestion = x.lastQuestion;
+        var reset = x.reset;
+        var speech = x.speech;
+        
+        main(animationState, emotiveFace, emotiveVoice, endSpeech, lastQuestion, reset, speech);
+      });
+      
+      
+      FanimationState.on("value", function(snapshot) {
+        var animationState = snapshot.val();
+        animateFace(animationState);
+      });
+      
+      Fspeech.on("value", function(snapshot) {
+        var speech = snapshot.val();
+        setTimeout(function(){
+          speakJem(speech.toString(), curState);
+        }, 50);
+      });
+      
+      FendSpeech.on("value", function(snapshot) {
+        endSpeech();
+      });
+      
+      function doStuff(curState) {
+        
+      }
+      
+      function animateFace(animationState) {
+        //handle animation
+        if (animationState == "neutral") {
+          console.log("neutral");
+          $(".mouth").removeClass("smile frown");
+          //blink again
+          $(".eye").removeClass("smile frown");
+          $(".eye").addClass("blink blink-fast blink-twice");
+          blinkFunction();
+          clearInterval(blinkInterval);
+          blinkInterval = setInterval(blinkFunction, 8*1000);
+
+        } 
+        else if (animationState == "smile") {
+          console.log("smile");
+          $(".mouth").removeClass("smile frown");
+          $(".mouth").addClass("smile");
+          
+          if ($(".eye.left").hasClass("blink")) {
+              $(".eye").addClass("smile");
+              $(".eye").removeClass("blink blink-fast blink-twice");
+              clearInterval(blinkInterval);
+          }
+        } 
+        else if (animationState == "frown") {
+          console.log("frown");
+          $(".mouth").removeClass("smile frown");
+          $(".mouth").addClass("frown");
+          
+          if ($(".eye.left").hasClass("blink")) {
+              $(".eye").addClass("frown");
+              $(".eye").removeClass("blink blink-fast blink-twice");
+              clearInterval(blinkInterval);
+          }
+        }
+      }
+      
+      //Blinking function
+      function blinkFunction() {
+        //console.log("running");
+
+        if (!$(".eye.left").hasClass("blink")) {
+            return false;
+        }
+
+        var d = new Date();
+        var n = d.getSeconds();
+
+        var rand1 = Math.floor(Math.random() * 60) + 1;
+        var rand2 = Math.floor(Math.random() * 60) + 1;
+
+        if (rand1 > rand2) {
+            var a = rand2;
+            rand2 = rand1;
+            rand1 = a;
+        }
+
+        if (n > rand1 && n < rand2) {
+          if (!$(".eye.left").hasClass("blink-fast")) {
+            $(".eye").removeClass("blink-twice");
+            $(".eye").addClass("blink-fast");
+            $(".command-list").append("<p>Blink Slow...</p>");
+          }
+        } else if (n > 50) {
+          //console.log("now twice");
+          if (!$(".eye.left").hasClass("blink-twice")) {
+            $(".eye").removeClass("blink-fast");
+            $(".eye").addClass("blink-twice");
+            $(".command-list").append("<p>Blink Twice...</p>");
+          }
+        } else {
+          //console.log("rem");
+          $(".eye").removeClass("blink-fast");
+          $(".eye").removeClass("blink-twice");
+          $(".command-list").append("<p>Blink Normal...</p>");
+        }
+      } blinkFunction();
+      clearInterval(blinkInterval);
+      blinkInterval = setInterval(blinkFunction, 8*1000);
+      
+      var u ;
+      function speakJem(text, curState) {
+        //speechSynthesis.cancel();
+        u = new SpeechSynthesisUtterance();
+        u.text = text;
+        u.voice = getSpeechVoice(curState);
+
+        var t;
+        var interval;
+        u.onstart = function (event) {
+            t = event.timeStamp;
+            console.log(t);
+
+            clearInterval(interval);
+            jemMouthMove();
+            interval = setInterval(jemMouthMove, 0.22*1000);
+        };
+
+        u.onend = function (event) {
+            t = event.timeStamp - t;
+            console.log(event.timeStamp);
+            console.log((t / 1000) + " seconds", "end");
+
+            clearInterval(interval);
+            $(".mouth").removeClass("speak-down speak-up");
+            endSpeech();
+        };
+
+        u.onboundary = function (event) {
+            if (event) {
+              //console.log("boundary");
+              //speechSynthesis.pause();
+            } else {
+              //console.log("no bound");
+              //speechSynthesis.resume();
+            }
+        };
+
+        console.log("starting speech");
+        speechSynthesis.speak(u);	
+      }
+      
+      function endSpeech() {
+        speechSynthesis.cancel();
+      }
+
+      function jemMouthMove(){
+          if ($(".mouth").hasClass("speak-down")) {
+              $(".mouth").removeClass("speak-down");
+              $(".mouth").addClass("speak-up");
+          } else {
+              $(".mouth").removeClass("speak-up");
+              $(".mouth").addClass("speak-down");
+          }
+      }
+      
+      function getSpeechVoice(curState) {
+        if (curState.emotiveVoice) {
+          return window.speechSynthesis.getVoices()
+            .filter(function(voice) { return voice.name == 'Alex'; })[0];
+        } else {
+          //for now, CHANGE THIS
+          return window.speechSynthesis.getVoices()
+            .filter(function(voice) { return voice.name == 'Alex'; })[0];
+        }
+      }
+    </script>
+  </body>
+</html>

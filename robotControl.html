@@ -1,0 +1,378 @@
+<html>
+  <head>
+    <script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
+    <script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  </head>
+  <body>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: 'Roboto Mono';
+        width: 100%;
+        height: 100%;
+        overflow: scroll;
+      }
+      
+      .app {
+        height: 100vh;
+        width: 100vw;
+        position: relative;
+      }
+      
+      .half {
+        display: inline-block;
+        height: 100vh;
+        position: absolute;
+        top: 0;
+        left: 0;
+        padding-left: 120px;
+      } .half.two {
+        top: 60px;
+        left: 50%;
+        right: 0;
+        padding-left: 0;
+        padding-right: 120px;
+      }
+      
+      .currentStatus div {
+        margin-bottom: 5px;
+      }
+      
+      .emotionControls .emotion {
+        display: inline-block;
+        margin-right: 40px;
+        cursor: pointer;
+      } .emotionControls .emotion img {
+        max-width: 120px;
+      } .emotionControls .emotion img:hover {
+        opacity: 0.4;
+      }
+      
+      .fourByFour {
+        width: 450px;
+        height: 300px;
+        margin-top: 40px;
+        position: relative;
+      }
+      .fourByFour .voiceControls, .fourByFour .faceStateControls {
+        display: inline-block;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: 150px;
+      } .fourByFour .voiceControls>div, .fourByFour .faceStateControls>div {
+        display: inline-block;
+        width: 220px;
+        height: 150px;
+        text-align: center;
+        padding-top: 40px;
+        border: 1px solid rgba(0,0,0,0.2);
+        cursor: pointer;
+      } .fourByFour .dy {
+        display: block;
+        margin-top: 15px;
+      }
+      
+      .fourByFour .off:hover {
+        background: #ddd;
+      } .fourByFour .on {
+        background: red;
+        cursor: default !important;
+      }
+      
+      .fourByFour .faceStateControls {
+        margin-top: 150px;
+      }
+      
+      .resetButtons {
+        margin-bottom: 40px;
+      } .reset, .endSpeech {
+        background: red;
+        height: 60px;
+        width: 250px;
+        text-align: center;
+        margin-left: auto;
+        margin-right: 0;
+        padding-top: 14px;
+        margin-bottom: 30px;
+        cursor: pointer;
+        color: #fff;
+        font-size: 24px;
+      } .reset:hover, .endSpeech:hover {
+        width: 280px;
+      }
+      
+      .speechControls {
+        text-align: right;
+      } .speechControls .speech {
+        width: 230px;
+        background: #333;
+        margin-bottom: 15px;
+        font-size: 21px;
+        height: 60px;
+        text-align: center;
+        color: #fff;
+        padding-top: 15px;
+        cursor: pointer;
+        margin-right: 0;
+        margin-left: auto;
+      } .speechControls .speech:hover {
+        background: #aaa;
+      } .speechControls .col1, .speechControls .col2 {
+        display: inline-block;
+        width: 49%;
+      }
+    </style>
+    <div class="app">
+      <div class="half">
+        <!-- current app state -->
+        <div class="currentStatus">
+          <h1>Current Status</h1>
+          <div class="animationState">
+            Current animation state: <span class="dy bold">neutral</span>
+            <!-- Pop from FB -->
+          </div>
+          <div class="wordsSpoken">
+            Last spoken words:<br/><span class="dy bold">text goes here</span>
+            <!-- Pop from FB -->
+          </div>
+          <div class="lastQuestion">
+            <!-- Pop from FB -->
+            Last question #: <span class="dy bold">0</span>
+          </div>
+          <div class="speechFrozen">
+            <!-- Pop from FB -->
+            Is speech frozen?: <span class="dy bold">false</span> (if true press RESET)
+          </div>
+        </div>
+        <!-- ./current app status -->
+        <!-- facial controls -->
+        <div class="emotionControls">
+          <h1>Face Controls</h1>
+          <div class="emotion smile">
+            <img src="http://blogs-images.forbes.com/ericsavitz/files/2011/03/smiley-face.jpg?width=960">
+          </div>
+          <div class="emotion neutral">
+            <img src="https://www.earthworksaction.org/images/uploads/yellow-neutral-face-300x300.gif">
+          </div>
+          <div class="emotion frown">
+            <img src="https://pbs.twimg.com/profile_images/811341743371194368/353_ttjx.jpg">
+          </div>
+        </div>
+        <!-- ./facial controls -->
+        <!-- 4x4 controls -->
+        <div class="fourByFour">
+          <div class="voiceControls">
+            <div class="emotiveVoice on">
+              EMOTIVE VOICE
+              <br/>
+              <span class="dy">On</span>
+            </div>
+            <div class="flatVoice off">
+              FLAT VOICE
+              <br/>
+              <span class="dy">Off</span>
+            </div>
+          </div>
+          <div class="faceStateControls">
+            <div class="emotiveFace on">
+              EMOTIVE FACE
+              <br/>
+              <span class="dy">On</span>
+            </div>
+            <div class="flatFace off">
+              FLAT FACE
+              <br/>
+              <span class="dy">Off</span>
+            </div>
+          </div>
+        </div>
+        <!-- ./4x4 controls -->
+      </div>
+      <div class="half two">
+        <!-- reset and end speech-->
+        <div class="resetButtons">
+          <div class="reset">RESET</div>
+          <div class="endSpeech">END SPEECH</div>
+        </div>
+        <!-- ./reset and end speech -->
+        <!-- speaking controls -->
+        <div class="speechControls">
+          <h1>Speech Controls</h1>
+          <div class="col1">
+            <div class="speech speech1 last" data-target="The shape on the right is blue.">1</div>
+            <div class="speech speech2" data-target="There are five red squares.">2</div>
+            <div class="speech speech3" data-target="There are three rectangles.">3</div>
+            <div class="speech speech4" data-target="There are 10 triangles.">4</div>
+            <div class="speech speech5" data-target="The shapes are different.">5</div>
+          </div>
+          <div class="col2">
+            <div class="speech speech6" data-target="The shapes are the same.">6</div>
+            <div class="speech speech7" data-target="There is one blue circle.">7</div>
+            <div class="speech speech8" data-target="There are 4 green rectangles.">8</div>
+            <div class="speech speech7" data-target="I'm glad I got that right!">Flat Face HAPPY</div>
+            <div class="speech speech8" data-target="I'm sad I got that wrong.">Flat Face SAD</div>
+          </div>
+        </div>
+        <!-- ./speaking controls -->
+      </div>
+    </div>
+    <script>
+      var FanimationState = new Firebase('https://jemscazlab.firebaseio.com/animationState');
+      var FemotiveFace = new Firebase('https://jemscazlab.firebaseio.com/emotiveFace');
+      var FemotiveVoice = new Firebase('https://jemscazlab.firebaseio.com/emotiveVoice');
+      var FendSpeech = new Firebase('https://jemscazlab.firebaseio.com/endSpeech');
+      var FlastQuestion = new Firebase('https://jemscazlab.firebaseio.com/lastQuestion');
+      var Freset = new Firebase('https://jemscazlab.firebaseio.com/reset');
+      var Fspeech = new Firebase('https://jemscazlab.firebaseio.com/speech');
+      var firebaseFull = new Firebase('https://jemscazlab.firebaseio.com/');
+      var curState;
+      
+      function main(animationState, emotiveFace, emotiveVoice, endSpeech, lastQuestion, reset, speech) {
+        curState = {
+          "animationState" : animationState,
+          "emotiveFace": emotiveFace,
+          "emotiveVoice" : emotiveVoice,
+          "endSpeech" : endSpeech,
+          "lastQuestion" : lastQuestion, 
+          "reset" : reset,
+          "speech" : speech
+        }
+        
+        updateAllVals(curState);        
+      }
+      
+      function updateAllVals(curState) {
+        // Set Current State
+        $(".animationState .dy").text(curState.animationState);
+        $(".wordsSpoken .dy").text(curState.speech);
+        $(".lastQuestion .dy").text(curState.lastQuestion);
+        $(".speechFrozen .dy").text(curState.endSpeech);
+        
+        //Set current emotiveVoice
+        if(curState.emotiveVoice == true) {
+          $(".emotiveVoice").removeClass("on off").addClass("on");
+          $(".emotiveVoice .dy").text("on");
+          $(".flatVoice").removeClass("on off").addClass("off");
+          $(".flatVoice .dy").text("off");
+        } else {
+          $(".flatVoice").removeClass("on off").addClass("on");
+          $(".flatVoice .dy").text("on");
+          $(".emotiveVoice").removeClass("on off").addClass("off");
+          $(".emotiveVoice .dy").text("off");
+        }
+        
+        //Set current emotiveFace
+        if(curState.emotiveFace == true) {
+          $(".emotiveFace").removeClass("on off").addClass("on");
+          $(".emotiveFace .dy").text("on");
+          $(".flatFace").removeClass("on off").addClass("off");
+          $(".flatFace .dy").text("off");
+        } else {
+          $(".flatFace").removeClass("on off").addClass("on");
+          $(".flatFace .dy").text("on");
+          $(".emotiveFace").removeClass("on off").addClass("off");
+          $(".emotiveFace .dy").text("off");
+        }
+      }
+      
+      firebaseFull.on("value", function(snapshot) {
+        var x = snapshot.val();
+        var animationState = x.animationState;
+        var emotiveFace = x.emotiveFace;
+        var emotiveVoice = x.emotiveVoice;
+        var endSpeech = x.endSpeech;
+        var lastQuestion = x.lastQuestion;
+        var reset = x.reset;
+        var speech = x.speech;
+        
+        main(animationState, emotiveFace, emotiveVoice, endSpeech, lastQuestion, reset, speech);
+      });
+      
+      //Update what is emotive (face/voice)
+      $(".voiceControls>div").on("click", function(){
+        //alert("a");
+        if($(this).hasClass("emotiveVoice")) {
+          //alert("b");
+          //MAKE EMOTIVE VOICE TRUE
+          firebaseFull.update({"emotiveVoice" : true});
+        } else {
+          //alert("c");
+          firebaseFull.update({"emotiveVoice" : false});
+        }
+      });
+      $(".faceStateControls>div").on("click", function(){
+        //alert("a");
+        if($(this).hasClass("emotiveFace")) {
+          //alert("b");
+          //MAKE EMOTIVE FACE TRUE
+          firebaseFull.update({"emotiveFace" : true});
+        } else {
+          //alert("c");
+          firebaseFull.update({"emotiveFace" : false});
+        }
+      });
+      
+      //Update emotion
+      $(".emotionControls .emotion").on("click", function(){
+        if($(this).hasClass("neutral")) {
+          firebaseFull.update({"animationState" : "neutral"});
+          firebaseFull.update({"speech" : ""});
+        } else if($(this).hasClass("smile")) {
+          firebaseFull.update({"animationState" : "smile"});
+          firebaseFull.update({"speech" : "I'm glad I got that right!"});
+        } else if($(this).hasClass("frown")) {
+          firebaseFull.update({"animationState" : "frown"});
+          firebaseFull.update({"speech" : "I'm sad I got that wrong."});
+        }
+      });
+      
+      //RESET FUNCTION!!!!!!!!
+      $(".reset").on("click", function(){
+        firebaseFull.update({"animationState" : "neutral"});
+        firebaseFull.update({"endSpeech" : "false"});
+        firebaseFull.update({"speech" : ""});
+      });
+      $(".endSpeech").on("click", function(){
+        firebaseFull.update({"endSpeech" : "true"});
+        firebaseFull.update({"speech" : ""});
+      });
+      
+      //SPEECH FUNCTION
+      $(".speechControls .speech").click(function(){
+        var speech = $(this).data("target");
+        var number = $(this).text();
+        firebaseFull.update({"endSpeech" : "false"});
+        firebaseFull.update({"speech" : speech});
+        firebaseFull.update({"lastQuestion" : number});
+      });
+    </script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
