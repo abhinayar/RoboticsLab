@@ -26,6 +26,7 @@
             </div>
         </div>
     </div>
+    <button id="speech" style="display: none;"></button>
     <script>
       //Get Firebase vars
       var FanimationState = new Firebase('https://jemscazlab.firebaseio.com/animationState');
@@ -80,8 +81,19 @@
       
       Fspeech.on("value", function(snapshot) {
         var speech = snapshot.val();
-        setTimeout(function(){
+        $("#speech").text(speech.toString());
+        console.log($("#speak").text());
+        $("#speech").click();
+        /*setTimeout(function(){
           speakJem(speech.toString(), curState);
+        }, 50);*/
+      });
+      
+      $("#speech").click(function(){
+        var speech = $(this).text();
+        console.log("speaking");
+        setTimeout(function(){
+          speakJem(speech, curState);
         }, 50);
       });
       
@@ -173,10 +185,9 @@
       clearInterval(blinkInterval);
       blinkInterval = setInterval(blinkFunction, 8*1000);
       
-      var u ;
       function speakJem(text, curState) {
         //speechSynthesis.cancel();
-        u = new SpeechSynthesisUtterance();
+        var u = new SpeechSynthesisUtterance();
         u.text = text;
         u.voice = getSpeechVoice(curState);
 
