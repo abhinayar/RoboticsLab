@@ -348,6 +348,7 @@
       //SPEECH FUNCTION
       $(".speechControls .speech").click(function(){
         var speech = $(this).data("target");
+        
         var number = $(this).text();
         firebaseFull.update({"endSpeech" : "false"});
         firebaseFull.update({"speech" : speech});
