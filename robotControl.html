@@ -210,15 +210,19 @@
             <div class="speech speech1 last" data-target="The shape on the right is blue.">1</div>
             <div class="speech speech2" data-target="There are five red squares.">2</div>
             <div class="speech speech3" data-target="There are three rectangles.">3</div>
-            <div class="speech speech4" data-target="There are 10 triangles.">4</div>
+            <div class="speech speech4" data-target="There are ten triangles.">4</div>
             <div class="speech speech5" data-target="The shapes are different.">5</div>
+            <div class="speech speech6" data-target="The shapes are different.">6</div>
+            <div class="speech speech7" data-target="The shapes are the same.">7</div>
           </div>
           <div class="col2">
-            <div class="speech speech6" data-target="The shapes are the same.">6</div>
-            <div class="speech speech7" data-target="There is one blue circle.">7</div>
-            <div class="speech speech8" data-target="There are 4 green rectangles.">8</div>
-            <div class="speech speech7" data-target="I'm glad I got that right!">Flat Face HAPPY</div>
-            <div class="speech speech8" data-target="I'm sad I got that wrong.">Flat Face SAD</div>
+            <div class="speech speech8" data-target="There is one blue circle.">8</div>
+            <div class="speech speech9" data-target="There are four green rectangles.">9</div>
+            <div class="speech speech10" data-target="There are three lines.">10</div>
+            <div class="speech speech11" data-target="There are five lines.">11</div>
+            <div class="speech speech12" data-target="There are nine lines.">12</div>
+            <div class="speech speech13" data-target="I'm glad I got that right!">Flat Face HAPPY</div>
+            <div class="speech speech14" data-target="I'm sad I got that wrong.">Flat Face SAD</div>
           </div>
         </div>
         <!-- ./speaking controls -->
@@ -331,11 +335,19 @@
         } else if($(this).hasClass("frown")) {
           firebaseFull.update({"animationState" : "frown"});
           firebaseFull.update({"speech" : "I'm sad I got that wrong."});
-        }
+        } 
       });
       
       //RESET FUNCTION!!!!!!!!
+      var i = 0;
       $(".reset").on("click", function(){
+        if (i % 2 == 0) {
+          firebaseFull.update({"reset" : "true"});
+          i++;
+        } else {
+          firebaseFull.update({"reset" : "false"});
+          i++;
+        }
         firebaseFull.update({"animationState" : "neutral"});
         firebaseFull.update({"endSpeech" : "false"});
         firebaseFull.update({"speech" : ""});

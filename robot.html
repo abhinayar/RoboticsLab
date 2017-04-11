@@ -81,12 +81,12 @@
       
       Fspeech.on("value", function(snapshot) {
         var speech = snapshot.val();
-        $("#speech").text(speech.toString());
-        console.log($("#speak").text());
-        $("#speech").click();
-        /*setTimeout(function(){
+        //$("#speech").text(speech.toString());
+        //console.log($("#speak").text());
+        //$("#speech").click();
+        setTimeout(function(){
           speakJem(speech.toString(), curState);
-        }, 50);*/
+        }, 50);
       });
       
       $("#speech").on("click", function(){
@@ -100,6 +100,13 @@
       FendSpeech.on("value", function(snapshot) {
         endSpeech();
         $(".mouth").removeClass("speak-down speak-up");
+        clearInterval(intervalGlobal);
+      });
+      
+      Freset.on("value", function(){
+        endSpeech();
+        $(".mouth").removeClass("speak-down speak-up");
+        clearInterval(intervalGlobal);
       });
       
       function doStuff(curState) {
@@ -186,6 +193,7 @@
       clearInterval(blinkInterval);
       blinkInterval = setInterval(blinkFunction, 8*1000);
       
+      var intervalGlobal = null;
       function speakJem(text, curState) {
         //speechSynthesis.cancel();
         var u = new SpeechSynthesisUtterance();
@@ -193,14 +201,13 @@
         u.voice = getSpeechVoice();
         
         var t;
-        var interval;
         u.onstart = function (event) {
             t = event.timeStamp;
             console.log(t);
 
-            clearInterval(interval);
+            clearInterval(intervalGlobal);
             jemMouthMove();
-            interval = setInterval(jemMouthMove, 0.22*1000);
+            intervalGlobal = setInterval(jemMouthMove, 0.22*1000);
         };
 
         u.onend = function (event) {
@@ -208,8 +215,9 @@
             console.log(event.timeStamp);
             console.log((t / 1000) + " seconds", "end");
 
-            clearInterval(interval);
+            clearInterval(intervalGlobal);
             $(".mouth").removeClass("speak-down speak-up");
+            speechSynthesis.cancel();
             endSpeech();
         };
 
@@ -228,6 +236,8 @@
       }
       
       function endSpeech() {
+        clearInterval(intervalGlobal);
+        $(".mouth").removeClass("speak-down speak-up");
         speechSynthesis.cancel();
       }
 
@@ -249,7 +259,7 @@
           return voices[48];
         } else {
           //for now, CHANGE THIS
-          return voices[52];
+          return voices[35];
         }
       }
     </script>
