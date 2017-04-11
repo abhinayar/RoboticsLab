@@ -189,8 +189,9 @@
         //speechSynthesis.cancel();
         var u = new SpeechSynthesisUtterance();
         u.text = text;
-        u.voice = getSpeechVoice(curState);
-
+        var voices = window.speechSynthesis.getVoices();
+        u.voice = voices[26];
+        
         var t;
         var interval;
         u.onstart = function (event) {
