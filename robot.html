@@ -26,7 +26,7 @@
             </div>
         </div>
     </div>
-    <button id="speech" style="display: none;"></button>
+    <button id="speech" style="opacity: 0"></button>
     <script>
       //Get Firebase vars
       var FanimationState = new Firebase('https://jemscazlab.firebaseio.com/animationState');
@@ -89,7 +89,7 @@
         }, 50);*/
       });
       
-      $("#speech").click(function(){
+      $("#speech").on("click", function(){
         var speech = $(this).text();
         console.log("speaking");
         setTimeout(function(){
@@ -190,8 +190,8 @@
         var u = new SpeechSynthesisUtterance();
         u.text = text;
         var voices = window.speechSynthesis.getVoices();
-        u.voice = voices[0];
-        
+        u.voice = voices[28];//voices[26];//voices[17];//voices[10];//getSpeechVoice(curState);
+
         var t;
         var interval;
         u.onstart = function (event) {
@@ -241,14 +241,15 @@
           }
       }
       
+      var voice = "Alice";
       function getSpeechVoice(curState) {
         if (curState.emotiveVoice) {
           return window.speechSynthesis.getVoices()
-            .filter(function(voice) { return voice.name == 'Alex'; })[0];
+            .filter(function(voice) { return voice.name == voice; })[0];
         } else {
           //for now, CHANGE THIS
           return window.speechSynthesis.getVoices()
-            .filter(function(voice) { return voice.name == 'Alex'; })[0];
+            .filter(function(voice) { return voice.name == voice; })[0];
         }
       }
     </script>
