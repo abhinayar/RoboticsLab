@@ -99,6 +99,7 @@
       
       FendSpeech.on("value", function(snapshot) {
         endSpeech();
+        $(".mouth").removeClass("speak-down speak-up");
       });
       
       function doStuff(curState) {
@@ -189,9 +190,8 @@
         //speechSynthesis.cancel();
         var u = new SpeechSynthesisUtterance();
         u.text = text;
-        var voices = window.speechSynthesis.getVoices();
-        u.voice = voices[28];//voices[26];//voices[17];//voices[10];//getSpeechVoice(curState);
-
+        u.voice = getSpeechVoice();
+        
         var t;
         var interval;
         u.onstart = function (event) {
@@ -241,15 +241,15 @@
           }
       }
       
-      var voice = "Alice";
-      function getSpeechVoice(curState) {
+      //36, 48, 49
+      //bad: 40, 52
+      function getSpeechVoice() {
+        var voices = window.speechSynthesis.getVoices();
         if (curState.emotiveVoice) {
-          return window.speechSynthesis.getVoices()
-            .filter(function(voice) { return voice.name == voice; })[0];
+          return voices[48];
         } else {
           //for now, CHANGE THIS
-          return window.speechSynthesis.getVoices()
-            .filter(function(voice) { return voice.name == voice; })[0];
+          return voices[52];
         }
       }
     </script>
