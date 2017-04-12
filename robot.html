@@ -39,6 +39,7 @@
       var firebaseFull = new Firebase('https://jemscazlab.firebaseio.com/');
       var curState;
       var blinkInterval;
+      var emotiveVoice = true;
       
       //Global vars
     
@@ -85,17 +86,12 @@
         //console.log($("#speak").text());
         //$("#speech").click();
         setTimeout(function(){
-          speakJem(speech.toString(), curState);
+          speakJem(speech.toString());
         }, 50);
       });
-      
-      $("#speech").on("click", function(){
-        var speech = $(this).text();
-        console.log("speaking");
-        setTimeout(function(){
-          speakJem(speech, curState);
-        }, 50);
-      });
+      FemotiveVoice.on("value", function(snapshot) {
+        emotiveVoice = snapshot.val();
+      })
       
       FendSpeech.on("value", function(snapshot) {
         endSpeech();
@@ -194,11 +190,16 @@
       blinkInterval = setInterval(blinkFunction, 8*1000);
       
       var intervalGlobal = null;
-      function speakJem(text, curState) {
+      function speakJem(text) {
         //speechSynthesis.cancel();
         var u = new SpeechSynthesisUtterance();
         u.text = text;
         u.voice = getSpeechVoice();
+        if (!emotiveVoice) {
+          u.rate = 0.75;
+        } else {
+          u.rate = 0.95;
+        }
         
         var t;
         u.onstart = function (event) {
@@ -254,12 +255,15 @@
       //36, 48, 49
       //bad: 40, 52
       function getSpeechVoice() {
+        console.log(curState);
         var voices = window.speechSynthesis.getVoices();
-        if (curState.emotiveVoice) {
+        if (emotiveVoice) {
+          console.log("emotiveVoice is true");
           return voices[32];//48
         } else {
           //for now, CHANGE THIS
-          return voices[35];
+          console.log("emotiveVoice is false");
+          return voices[35];//32
         }
       }
     </script>
