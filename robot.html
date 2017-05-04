@@ -1,3 +1,40 @@
+<!--
+  Made for CPSC 473, Robotics Lab
+  By Abhi Nayar, Stephanie Hickman and Alex Saointx
+  
+  This is the Robot Face code
+  It is a collection of HTML/CSS/JS that connects to a Firebase backend in order to render on any webpage (any device) a robot face.
+  We also handle the HTML5 Speech API here, which allows our robot to talk.
+
+  Firebase account:
+    The current configuration is set up to access a Firebase account set up by Abhi Nayar
+    This means it is only accessible by being logged in as him.
+    In order to set this up with your own Firebase account, please follow the following steps:
+
+    1. Create Firebase database in your Console
+    2. Click on Database, this should take you to the Database Schema
+    3. It will be blank - what you need to do is manually create the variables
+      - animationState
+      - emotiveFace
+      - emotiveVoice
+      - endSpeech
+      - lastQuestion
+      - reset
+      - speech
+    4. Once the schema is created, click on any of the variables and copy the link
+    5. Replace each variables link
+      I.E- where it currently says https://jemscazlab.firebaseio.com/variableName
+      Replace it with https://YOURFIREBASEURL.firebaseio.com/variableName
+    6. Once you replace all the urls in both robot.html and robotControl.html you should have a persistent database. Now just host robot.html and robotControl.html on a server of your choice and Jem's software should be fully functioning
+
+    NOTE: 
+      In interest of time, neither webpage follows W3C specs or has particularly clean code. A TODO would be to move all the CSS and refactor it to a seperate file, as well as seperate out the javascript and just build a cleaner website as a whole. For the purposes of this project however this was more than sufficient.
+
+  With any questions feel free to email Abhi Nayar at anayar2[at]gmail[dot]com.
+  
+  Thanks!
+  Abhi, Alex & Stephanie
+-->
 <html>
   <head>
     <script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
