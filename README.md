@@ -1,4 +1,5 @@
-# README for "Jem" - A novel animated face robot consturcted for CPSC 473, Spring 2017
+# README for "Jem"
+# A novel animated face robot consturcted for CPSC 473, Spring 2017
 
 ## By Abhi Nayar (YC '18), Alex Saointz (YC '18) and Stephanie Hickman (YC '19)
 
